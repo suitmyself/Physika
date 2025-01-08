@@ -1,12 +1,12 @@
 /*
- * @file PDM_particle.h 
+ * @file PDM_particle.h
  * @Basic PDParticle class. Particles used for PDM (PeriDynamics Method).
  * @author Wei Chen
- * 
+ *
  * This file is part of Physika, a versatile physics simulation library.
  * Copyright (C) 2013 Physika Group.
  *
- * This Source Code Form is subject to the terms of the GNU General Public License v2.0. 
+ * This Source Code Form is subject to the terms of the GNU General Public License v2.0.
  * If a copy of the GPL was not distributed with this file, you can obtain one at:
  * http://www.gnu.org/licenses/gpl-2.0.html
  *
@@ -49,7 +49,7 @@ public:
     void setAnistropicMatrix(const SquareMatrix<Scalar, Dim> & anisotropic_matrix);
 
     void addFamily(const PDMFamily<Scalar, Dim> & family);
-    // note: we do not provide a deleter according to a relative position in list due to its low efficiency 
+    // note: we do not provide a deleter according to a relative position in list due to its low efficiency
     void deleteFamily(typename std::list<PDMFamily<Scalar, Dim> >::iterator & pos_iter );
 
     void addDirectNeighbor(unsigned int direct_neighbor_id);
@@ -90,7 +90,7 @@ template <typename Scalar, int Dim>
 class PDMFamily
 {
 public:
-    // default constructor not provided 
+    // default constructor not provided
     PDMFamily(const unsigned int id, const Vector<Scalar, Dim> & rest_relative_pos, const SquareMatrix<Scalar, Dim> & anisotropic_matrix);
     virtual ~PDMFamily();
 
@@ -128,17 +128,17 @@ public:
     void addEb(Scalar delta_eb);
     void setEb(Scalar eb);
     void setEbStretchLimit(Scalar eb_limit);
-    
+
     //for visco plasticity
     Scalar ed() const;
     void setEd(Scalar last_ed);
 
 protected:
-    const unsigned int id_;
+    unsigned int id_;
 
-    const Scalar rest_relative_pos_norm_;              // norm of rest relative position, should not be modified since its initialization
-    const Vector<Scalar, Dim> unit_rest_relative_pos_; // unit of rest relative position, should not be modified since its initialization
-    
+    Scalar rest_relative_pos_norm_;              // norm of rest relative position, should not be modified since its initialization
+    Vector<Scalar, Dim> unit_rest_relative_pos_; // unit of rest relative position, should not be modified since its initialization
+
     Scalar cur_relative_pos_norm_;                  // norm of current relative position, modified along with cur_relative_pos_
     Vector<Scalar, Dim> unit_cur_relative_pos_;     // unit vector of current relative position, modified along with cur_relative_pos_
 
@@ -149,7 +149,7 @@ protected:
 
     Scalar eb_;                     // back extension, defalut: 0.0
     Scalar eb_limit_;               // limit of back extension
-     
+
     Scalar ed_;                     // used only for visco plasticity, default: 0.0
 
     bool vaild_; // whether the family is within the horizon, default: false

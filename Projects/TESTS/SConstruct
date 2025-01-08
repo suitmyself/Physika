@@ -2,10 +2,10 @@
 # Scons script PhysikaTest project
 # @author: Fei Zhu, 04/27/2014
 #          Wei Chen,04/07/2016
-# Usage: 
+# Usage:
 #       1. Write the test code in a single cpp file
 #       2. Edit the script by making src_files variable src file
-#       3. Build the project by entering "scons" in terminal               
+#       3. Build the project by entering "scons" in terminal
 #################################################################
 
 #IMPORTS
@@ -29,7 +29,7 @@ src_files = ['vector1d_test.cpp']
 build_type = 'Debug'
 
 #MSVC VERSION FOR WINDOWS ENV
-msvc_version = '14.0'   #VS2015
+msvc_version = '14.3'   #VS2015
 #msvc_version = '14.1'   #VS2017
 
 #USE OPENGL(GL,GLU,GLUT,GLUI) OR NOT
@@ -50,10 +50,10 @@ use_cuda = False
 print(
 '''
 *********************************************************************************************
-Note: 
+Note:
 1. To support C++11/14 on windows platform, VS2015 or VS2017 is needed, you would sepcify "msvc_version" variable in this script.
 2. You would also specify to use "openmp" and enable "cuda" compiling by setting the "use_openmp" & "use_cuda" variable in this script.
-				 
+
 Trouble Shooting:
 1. On windows 8/10, administrator privilege is required to "scons" the project, so you should run shell window as admin.
    For the same reason, you should also open .sln file as admin to enable building in VS IDE.
@@ -152,30 +152,30 @@ ENV = {'PATH':os.environ['PATH']}
 if os_name == 'Darwin':
     if 'LIBRARY_PATH' in os.environ: ENV['LIBRARY_PATH'] = os.environ['LIBRARY_PATH']
     if 'LD_LIBRARY_PATHS' in os.environ: ENV['LD_LIBRARY_PATHS'] = os.environ['LD_LIBRARY_PATHS']
-        
+
 if compiler == 'g++':
     if build_type == 'Release':
         CCFLAGS = ['-O3', '-Wall', '-fno-strict-aliasing', '-std=gnu++11', '-DNDEBUG']
     else:
         CCFLAGS = ['-g', '-Wall', '-fno-strict-aliasing', '-std=gnu++11']
     env = Environment(CCFLAGS=CCFLAGS, CPPPATH=include_path, LIBPATH=lib_path, RPATH=lib_path, LIBS=libs, ENV=ENV)
-    
+
     #OPENMP SUPPORT
-    if use_openmp: 
-        env.Append(LINKFLAGS = '-fopenmp') 
+    if use_openmp:
+        env.Append(LINKFLAGS = '-fopenmp')
         env.Append(CCFLAGS = '-fopenmp')
-        
+
     #FOR STACK TRACE SUPPORT
-    env.Append(LINKFLAGS = '-rdynamic')   
+    env.Append(LINKFLAGS = '-rdynamic')
 else:
    if build_type == 'Release':
        CCFLAGS = ['/Ox', '/EHsc', '/DNDEBUG', '/W3', '/MDd']
    else:
        CCFLAGS = ['/Od', '/Zi', '/EHsc', '/W3', '/MDd']
-       
+
    #OPENMP SUPPORT
    if use_openmp: CCFLAGS.append('/openmp')
-    
+
    ENV['TMP'] = os.environ['TMP']
    if os_architecture == '32bit':
        arc = 'x86'
@@ -186,7 +186,7 @@ else:
    if build_type == 'Debug':
        env['LINKFLAGS'] = ['/DEBUG']
        env['CCPDBFLAGS'] = '/Zi /Fd${TARGET}.pdb'
-      
+
 #USE CUDA
 if use_cuda == True:
     env.Tool('cuda', toolpath = ['../../Documentation/Cuda_Scons_Tool/'])

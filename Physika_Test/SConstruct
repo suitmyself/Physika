@@ -2,7 +2,7 @@
 # Scons script for Physika Test
 # @author: Wei Chen,30/12/2016
 # Usage: enter root directory of the test project in terminal and
-#        enter "scons"                
+#        enter "scons"
 #################################################################
 
 
@@ -13,8 +13,9 @@
 build_type = 'Debug'
 
 #MSVC VERSION FOR WINDOWS ENV, TO SUPPORT C++11/14, VS2015 IS NEEDED
-msvc_version = '14.0'   #VS2015
+#msvc_version = '14.0'   #VS2015
 #msvc_version = '14.1'   #VS2017
+msvc_version = '14.3'   #VS2022
 
 #USE OPENGL(GL,GLU,GLUT,GLUI) OR NOT
 use_gl = True
@@ -26,12 +27,12 @@ use_openmp = False
 
 #USE CUDA
 use_cuda = True
-#use_cuda = False
+# use_cuda = False
 
 #DEBUG TARGET
 debug_target = 'cuda_matrix_2x2_test.exe'
 #debug_target = 'cuda_vector_2d_test.exe'
-#debug_target = 'render_demo.exe'
+# debug_target = 'render_demo.exe'
 #debug_target = 'grid_render_task_test.exe'
 #debug_target = 'color_bar_render_task_test.exe'
 #debug_target = 'volumetric_mesh_render_task_test.exe'
@@ -57,11 +58,11 @@ debug_target = 'cuda_matrix_2x2_test.exe'
 print(
 '''
 *********************************************************************************************
-Note: 
+Note:
 1. To support C++11/14 on windows platform, VS2015 or VS2017 is needed, you would sepcify "msvc_version" variable in this script.
 2. You would also specify to use "openmp" and enable "cuda" compiling by setting the "use_openmp" & "use_cuda" variable in this script.
 3. When disable cuda, we would ignore all .cpp test files that exists a "cuda" or "gpu" string in their path.
-				 
+
 Trouble Shooting:
 1. On windows 8/10, administrator privilege is required to "scons" the project, so you should run shell window as admin.
    For the same reason, you should also open .sln file as admin to enable building in VS IDE.
@@ -112,7 +113,7 @@ physika_libs = ['Physika_GUI', 'Physika_Dynamics', 'Physika_Render', 'Physika_IO
 #PHYSIKA IS DEPENDENT ON STACKWALKER ONLY ON WINDOWS WITH MSVC
 if compiler == 'msvc':
     physika_libs.append('StackWalker')
-    
+
 #ADDITIONAL PATH: SET ADDITIONAL INCLUDE AND LIB PATH
 #EXAMPLE: additional_inc_path=['./path1/','../path2/']
 additional_inc_path = []
@@ -156,7 +157,7 @@ if use_gl == True:
 include_path = physika_inc_path+additional_inc_path
 lib_path     = physika_lib_path+additional_lib_path
 libs         = physika_libs+additional_libs
-    
+
 env = Environment(ENV = ENV, CPPPATH = include_path, LIBPATH=lib_path, RPATH=lib_path, LIBS=libs, MSVS_ARCH = arc, TARGET_ARCH = arc, MSVC_VERSION = msvc_version)
 
 #SEPARATE RELEASE ENV & DEBUG ENV
@@ -166,17 +167,17 @@ if compiler == 'g++':
     #release
     CCFLAGS = ['-O3', '-Wall', '-fno-strict-aliasing', '-std=gnu++11', '-DNDEBUG']
     if use_openmp: #openmp support
-        CCFLAGS.append('-fopenmp') 
+        CCFLAGS.append('-fopenmp')
         release_env.Append(LINKFLAGS = '-fopenmp')
     release_env.Replace(CCFLAGS = CCFLAGS)
-        
+
     #debug
     CCFLAGS = ['-g', '-Wall', '-fno-strict-aliasing', '-std=gnu++11']
     if use_openmp: #openmp support
-        CCFLAGS.append('-fopenmp') 
-        debug_env.Append(LINKFLAGS = '-fopenmp') 
+        CCFLAGS.append('-fopenmp')
+        debug_env.Append(LINKFLAGS = '-fopenmp')
     debug_env.Replace(CCFLAGS = CCFLAGS)
-    
+
     #FOR STACK TRACE SUPPORT
     release_env.Append(LINKFLAGS = '-rdynamic')
     debug_env.Append(LINKFLAGS = '-rdynamic')
@@ -185,15 +186,15 @@ else:
     CCFLAGS = ['/Ox', '/EHsc', '/DNDEBUG', '/W3', '/bigobj', '/MDd']
     if use_openmp: CCFLAGS.append('/openmp') #openmp support
     release_env.Replace(CCFLAGS = CCFLAGS)
-        
+
     #debug
     CCFLAGS = ['/Od', '/Zi', '/EHsc', '/W3', '/bigobj', '/MDd']
     if use_openmp: CCFLAGS.append('/openmp') #openmp support
     debug_env.Replace(CCFLAGS = CCFLAGS)
-    
+
     debug_env['LINKFLAGS'] = ['/DEBUG']
     debug_env['CCPDBFLAGS'] = '/Zi /Fd${TARGET}.pdb'
-    
+
 #CUDA SUPPORT
 if use_cuda == True:
     release_env.Tool('cuda', toolpath = ['../Documentation/Cuda_Scons_Tool/'])
@@ -205,7 +206,7 @@ if use_cuda == True:
     debug_env.Append(BUILDERS = {'cuda_linker' : cuda_link_builder})
 
 ###################################################################################################
-#generate gtest and gmock libraries    
+#generate gtest and gmock libraries
 google_test_libs = SConscript('google_test/SConscript', exports = 'release_env os_name os_architecture compiler')
 ###################################################################################################
 
@@ -217,14 +218,14 @@ if build_type == 'Debug':
     non_unit_test_env = debug_env
 else:
     non_unit_test_env = release_env
-    
+
 non_unit_test_src_files = []
 for dir,_,_ in os.walk('Physika_Test_Src/Physika_Non_Unit_Test_Src/'):
     non_unit_test_src_files.extend(glob(os.path.join(dir, '*.cpp')))
 
     if use_cuda == True:
         non_unit_test_src_files.extend(glob(os.path.join(dir, '*.cu')))
-    
+
 for src_file in non_unit_test_src_files:
     target_name = os.path.splitext(src_file)[0]
 
@@ -242,12 +243,12 @@ for src_file in non_unit_test_src_files:
         target = non_unit_test_env.Program(target_name, [obj_file, cuda_obj_file])
 
     print(target)
-    
-    #COPY EXECUTABLE FILE TO PHYSIKA TEST ROOT DIRECTORY 
+
+    #COPY EXECUTABLE FILE TO PHYSIKA TEST ROOT DIRECTORY
     target_str = str(target[0])
     Command(os.path.split(target_str)[1], target_str, Copy("$TARGET", "$SOURCE"))
-    
-     
+
+
     #WINDOWS WORKAROUND: COPY DLLS TO EXECUTIVE DIRECTORY AND PHYSIKA TEST ROOT DIRECTORY
     if os_name == 'Windows':
         for rpath in lib_path:
@@ -289,7 +290,7 @@ for dir,_,_ in os.walk('Physika_Test_Src/Physika_Unit_Test_Src/'):
 for src_file in unit_test_src_files:
     target_name = os.path.splitext(src_file)[0]
     unit_test_env.Program(target_name, src_file)
-    
+
 target_name = 'Physika_Unit_Test_'+build_type
 target = unit_test_env.Program(target_name, unit_test_src_files)
 
